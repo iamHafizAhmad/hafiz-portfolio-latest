@@ -1,0 +1,139 @@
+<% content_for :title, "Day 1 - Ruby Object Model" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-indigo-300 hover:text-indigo-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-indigo-500/15 text-indigo-300 ring-indigo-400/30">DAY 1</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Ruby object model, classes, objects, self</h1>
+    </div>
+  </div>
+
+  <%# ---------- Section 1: class & object ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. Class & Object</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      A <strong class="text-gray-200">class</strong> is a blueprint. An <strong class="text-gray-200">object</strong> is one thing built from that blueprint,
+      with its own data (instance variables) and its own copy of the class's methods.
+    </p>
+
+    <%= terminal_window("animal.rb") do %>
+class Animal
+  def initialize(name, sound)
+    @name = name   # instance variable - unique per object
+    @sound = sound
+  end
+
+  def speak
+    "#{@name} says #{@sound}"
+  end
+end
+
+cat = Animal.new("Cat", "Meow")
+dog = Animal.new("Dog", "Woof")
+cat.speak # => "Cat says Meow"
+dog.speak # => "Dog says Woof"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @animal_output.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: self ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. self</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-indigo-300">self</code> means "whoever is running this line of code right now."
+      Inside a normal (instance) method, <code class="text-indigo-300">self</code> is the object. Inside a
+      <code class="text-indigo-300">def self.method</code> (class method), <code class="text-indigo-300">self</code> is the class itself.
+    </p>
+
+    <%= terminal_window("self_demo.rb") do %>
+class SelfDemo
+  def instance_method_self
+    "self inside an instance method => #{self}"
+  end
+
+  def self.class_method_self
+    "self inside a class method => #{self}"
+  end
+end
+
+SelfDemo.new.instance_method_self
+SelfDemo.class_method_self
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>=&gt; <%= @self_instance_output %></li>
+        <li>=&gt; <%= @self_class_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: everything is an object ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. Everything is an object</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      In Ruby, numbers, strings, <code class="text-indigo-300">nil</code>, <code class="text-indigo-300">true</code>/<code class="text-indigo-300">false</code>, and even classes
+      themselves are all objects - each is an instance of some class.
+    </p>
+
+    <%= terminal_window("object_model.rb") do %>
+5.class               # => Integer
+"hello".class         # => String
+nil.class             # => NilClass
+true.class            # => TrueClass
+Animal.class          # => Class   (a class is an object too!)
+Animal.superclass     # => Object
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @object_model_output.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: attr_accessor ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. attr_accessor</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Writing a getter and setter method by hand for every instance variable is repetitive.
+      <code class="text-indigo-300">attr_accessor :title</code> generates both automatically.
+    </p>
+
+    <%= terminal_window("book.rb") do %>
+class Book
+  attr_accessor :title
+
+  def initialize(title)
+    @title = title
+  end
+end
+
+book = Book.new("Ruby Basics")
+book.title            # => "Ruby Basics"  (getter)
+book.title = "Advanced Ruby" # (setter)
+book.title            # => "Advanced Ruby"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>before =&gt; <%= @attr_before %></li>
+        <li>after &nbsp;=&gt; <%= @attr_after %></li>
+      </ul>
+    </div>
+  </section>
+</div>

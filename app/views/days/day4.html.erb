@@ -1,0 +1,168 @@
+<% content_for :title, "Day 4 - Modules, Mixins, Namespaces" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-rose-300 hover:text-rose-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-rose-500/15 text-rose-300 ring-rose-400/30">DAY 4</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Modules, Mixins, Namespaces</h1>
+    </div>
+    <p class="mt-3 text-gray-400">One module, three different jobs. Kept simple.</p>
+  </div>
+
+  <%# ---------- Section 1: what is a module ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. What is a Module?</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      A <strong class="text-gray-200">module</strong> groups related methods together. Unlike a class, you never
+      write <code class="text-rose-300">Module.new</code> — you just use it directly.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-rose-500/10 ring-1 ring-rose-400/20 p-3 text-sm text-rose-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a toolbox. You don't "create" a toolbox to use it — you just open it and grab a tool.</span>
+    </div>
+
+    <%= terminal_window("toolbox.rb") do %>
+module MathHelpers
+  def self.square(x)
+    x * x
+  end
+end
+
+MathHelpers.square(4) # => 16
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>MathHelpers.square(4) =&gt; <%= @module_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: mixins ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. Mixins - adding a module into a class</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-rose-300">include</code> drops a module's methods into a class. Every object made from that
+      class can now use them like they were its own.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-rose-500/10 ring-1 ring-rose-400/20 p-3 text-sm text-rose-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a power-up in a game. include plugs the ability into the character.</span>
+    </div>
+
+    <%= terminal_window("mixin.rb") do %>
+module Greetable
+  def greet
+    "Hi, I'm #{name}!"
+  end
+end
+
+class Person
+  include Greetable
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+  end
+end
+
+Person.new("Ali").greet # => "Hi, I'm Ali!"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>Person.new("Ali").greet =&gt; <%= @mixin_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: include vs extend ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. include vs extend</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-rose-300">include</code> gives the methods to every <strong class="text-gray-200">object</strong>
+      made from the class. <code class="text-rose-300">extend</code> gives the methods straight to the
+      <strong class="text-gray-200">class itself</strong>.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-rose-500/10 ring-1 ring-rose-400/20 p-3 text-sm text-rose-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> include hands the power-up to everyone the factory makes. extend hands it to the factory itself.</span>
+    </div>
+
+    <%= terminal_window("include_vs_extend.rb") do %>
+module Flyable
+  def fly
+    "I'm flying!"
+  end
+end
+
+class Bird
+  include Flyable # every Bird object gets #fly
+end
+Bird.new.fly # => "I'm flying!"
+
+class Robot
+  extend Flyable # the Robot class itself gets .fly
+end
+Robot.fly # => "I'm flying!"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>Bird.new.fly =&gt; <%= @include_output %></li>
+        <li>Robot.fly =&gt; <%= @extend_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: namespaces ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. Namespaces - keeping names from clashing</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Wrap a class inside a module to give it a "last name." Two classes can then share the same short name
+      without colliding, and you reach each one with <code class="text-rose-300">::</code>.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-rose-500/10 ring-1 ring-rose-400/20 p-3 text-sm text-rose-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> two people both named "Sam" - no confusion once you say "Sam from Shop" vs "Sam from Warehouse."</span>
+    </div>
+
+    <%= terminal_window("namespaces.rb") do %>
+module Shop
+  class Order
+    def summary
+      "An order from the Shop module"
+    end
+  end
+end
+
+module Warehouse
+  class Order
+    def summary
+      "An order from the Warehouse module"
+    end
+  end
+end
+
+Shop::Order.new.summary
+Warehouse::Order.new.summary
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @namespace_output.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,208 @@
+<% content_for :title, "Day 2 - Methods, Blocks, Yield" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-cyan-300 hover:text-cyan-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-cyan-500/15 text-cyan-300 ring-cyan-400/30">DAY 2</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Methods, blocks, yield</h1>
+    </div>
+    <p class="mt-3 text-gray-400">One story the whole page: ☕ a coffee shop taking your order. Every example builds on it.</p>
+  </div>
+
+  <%# ---------- Section 1: default arguments ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. Default arguments - "what if they don't say a size?"</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      A <strong class="text-gray-200">default argument</strong> is a fallback value already built into the parameter.
+      It's only used when whoever calls the method skips that argument.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-3 text-sm text-cyan-100">
+      <span>💡</span>
+      <span><strong>The story:</strong> if a customer doesn't say a size, the shop just gives them a Medium. No size mentioned? No problem.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">order_coffee</code> → no size given → Ruby falls back to the default, <code class="text-cyan-300">"Medium"</code> → result: <span class="text-emerald-300">"Ordering a Medium coffee"</span></p>
+      <p><code class="text-gray-400">order_coffee("Large")</code> → a size WAS given → the default is skipped completely → result: <span class="text-emerald-300">"Ordering a Large coffee"</span></p>
+    </div>
+
+    <%= terminal_window("default_arguments.rb") do %>
+def order_coffee(size = "Medium")
+  "Ordering a #{size} coffee"
+end
+
+order_coffee          # => "Ordering a Medium coffee"
+order_coffee("Large") # => "Ordering a Large coffee"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>order_coffee =&gt; <%= @default_arg_output %></li>
+        <li>order_coffee("Large") =&gt; <%= @custom_arg_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: splat arguments ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. Splat arguments (*args) - "any number of toppings"</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      A <strong class="text-gray-200">splat</strong>, written as <code class="text-cyan-300">*toppings</code>, lets a
+      method accept any number of extra values — zero, one, or fifty — and collects them all into a single array.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-3 text-sm text-cyan-100">
+      <span>💡</span>
+      <span><strong>The story:</strong> a customer can ask for zero toppings, or five. The shop can't know in advance how many, so it just accepts however many show up.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">add_toppings</code> → nothing passed in → <code class="text-cyan-300">toppings</code> becomes an empty array <code class="text-cyan-300">[]</code> → result: <span class="text-emerald-300">"Just a plain coffee, no toppings"</span></p>
+      <p><code class="text-gray-400">add_toppings("milk", "sugar")</code> → 2 values passed in → <code class="text-cyan-300">toppings</code> becomes <code class="text-cyan-300">["milk", "sugar"]</code> → result: <span class="text-emerald-300">"Coffee with: milk, sugar"</span></p>
+    </div>
+
+    <%= terminal_window("splat_arguments.rb") do %>
+def add_toppings(*toppings)
+  return "Just a plain coffee, no toppings" if toppings.empty?
+
+  "Coffee with: #{toppings.join(", ")}"
+end
+
+add_toppings                 # => "Just a plain coffee, no toppings"
+add_toppings("milk", "sugar") # => "Coffee with: milk, sugar"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>add_toppings =&gt; <%= @no_toppings_output %></li>
+        <li>add_toppings("milk", "sugar") =&gt; <%= @with_toppings_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: keyword arguments ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. Keyword arguments - "naming each option"</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <strong class="text-gray-200">Keyword arguments</strong> are passed by name, like <code class="text-cyan-300">size: "Large"</code>,
+      instead of by position. That way it's always obvious which value means what, and they can have their own defaults too.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-3 text-sm text-cyan-100">
+      <span>💡</span>
+      <span><strong>The story:</strong> once an order has more than one option (size AND sugar), naming each one stops them from getting mixed up.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">order_details(size: "Large")</code> → <code class="text-cyan-300">size:</code> given, <code class="text-cyan-300">sugar:</code> skipped → Ruby uses sugar's default, <code class="text-cyan-300">1</code> → result: <span class="text-emerald-300">"Large coffee with 1 sugar(s)"</span></p>
+      <p><code class="text-gray-400">order_details(size: "Large", sugar: 3)</code> → both named and given → nothing falls back to a default → result: <span class="text-emerald-300">"Large coffee with 3 sugar(s)"</span></p>
+    </div>
+
+    <%= terminal_window("keyword_arguments.rb") do %>
+def order_details(size:, sugar: 1)
+  "#{size} coffee with #{sugar} sugar(s)"
+end
+
+order_details(size: "Large")            # => "Large coffee with 1 sugar(s)"
+order_details(size: "Large", sugar: 3)  # => "Large coffee with 3 sugar(s)"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>order_details(size: "Large") =&gt; <%= @keyword_default_output %></li>
+        <li>order_details(size: "Large", sugar: 3) =&gt; <%= @keyword_custom_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: blocks, yield, block_given? ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. Blocks & yield - "giving the barista instructions"</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      A <strong class="text-gray-200">block</strong> is a chunk of code attached to a method call using <code class="text-cyan-300">{ ... }</code>.
+      Inside the method, <code class="text-cyan-300">yield</code> actually runs that attached block.
+      <code class="text-cyan-300">block_given?</code> checks first whether a block was attached at all, so <code class="text-cyan-300">yield</code>
+      never gets called on nothing.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-3 text-sm text-cyan-100">
+      <span>💡</span>
+      <span><strong>The story:</strong> you can hand the barista special instructions ("extra hot, no foam"). If you don't hand over any instructions, they just make a plain coffee instead of guessing.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">make_coffee { "extra hot, no foam" }</code> → a block WAS attached → <code class="text-cyan-300">block_given?</code> is true → <code class="text-cyan-300">yield</code> runs the block → result: <span class="text-emerald-300">"Following your instructions: extra hot, no foam"</span></p>
+      <p><code class="text-gray-400">make_coffee</code> (nothing attached) → no block this time → <code class="text-cyan-300">block_given?</code> is false → <code class="text-cyan-300">yield</code> is skipped entirely, no crash → result: <span class="text-emerald-300">"No instructions given - making a plain coffee"</span></p>
+    </div>
+
+    <%= terminal_window("blocks_and_yield.rb") do %>
+def make_coffee
+  return "No instructions given - making a plain coffee" unless block_given?
+
+  "Following your instructions: #{yield}"
+end
+
+make_coffee { "extra hot, no foam" }
+# => "Following your instructions: extra hot, no foam"
+
+make_coffee
+# => "No instructions given - making a plain coffee"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>make_coffee { "extra hot, no foam" } =&gt; <%= @block_output %></li>
+        <li>make_coffee (no block) =&gt; <%= @no_block_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 5: explicit &block param ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">5. Explicit &block - "saving instructions for every cup"</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Adding <code class="text-cyan-300">&block</code> as the very last parameter grabs the block as a real, storable
+      object — so you can run it more than once, instead of only being able to <code class="text-cyan-300">yield</code> it a single time.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-cyan-500/10 ring-1 ring-cyan-400/20 p-3 text-sm text-cyan-100">
+      <span>💡</span>
+      <span><strong>The story:</strong> instead of instructions for one cup, you write them on a card and hand it over — now the barista can run those same instructions for every single cup they make.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">make_coffee_n_times(3) { |cup| "Cup ##{cup} ready!" }</code> → the block is captured into <code class="text-cyan-300">instructions</code> → the method loops 3 times → each loop calls <code class="text-cyan-300">instructions.call(i + 1)</code>, running your block again with a new number → result: an array of 3 messages</p>
+    </div>
+
+    <%= terminal_window("explicit_block.rb") do %>
+def make_coffee_n_times(n, &instructions)
+  results = []
+  n.times { |i| results << instructions.call(i + 1) }
+  results
+end
+
+make_coffee_n_times(3) { |cup| "Cup ##{cup} ready!" }
+# => ["Cup #1 ready!", "Cup #2 ready!", "Cup #3 ready!"]
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @explicit_block_output.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,159 @@
+<% content_for :title, "Day 3 - Procs vs Lambdas" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-amber-300 hover:text-amber-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-amber-500/15 text-amber-300 ring-amber-400/30">DAY 3</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Procs vs Lambdas</h1>
+    </div>
+    <p class="mt-3 text-gray-400">Kept as simple as possible — just 2 things to remember by the end of this page.</p>
+  </div>
+
+  <%# ---------- Section 1: what are they ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. What is a Proc / Lambda?</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Both are just <strong class="text-gray-200">a saved piece of code</strong> — like saving a mini-method in a box,
+      so you can run it later by calling <code class="text-amber-300">.call</code> on it.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-400/20 p-3 text-sm text-amber-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a sticky note with instructions on it. You write it once ("add 2 numbers"), then hand it to anyone to run whenever they want.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">add_proc = Proc.new { |a, b| a + b }</code> → this line only SAVES the instructions, it does not run them yet</p>
+      <p><code class="text-gray-400">add_proc.call(2, 3)</code> → NOW it actually runs, with <code class="text-amber-300">a = 2</code> and <code class="text-amber-300">b = 3</code> → result: <span class="text-emerald-300">5</span></p>
+    </div>
+
+    <%= terminal_window("procs_and_lambdas.rb") do %>
+# a Proc
+add_proc = Proc.new { |a, b| a + b }
+add_proc.call(2, 3) # => 5
+
+# a Lambda (does the same thing)
+add_lambda = lambda { |a, b| a + b }
+add_lambda.call(2, 3) # => 5
+
+# short lambda syntax you'll see a lot
+square = ->(n) { n * n }
+square.call(4) # => 16
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>add_proc.call(2, 3) =&gt; <%= @add_proc_output %></li>
+        <li>add_lambda.call(2, 3) =&gt; <%= @add_lambda_output %></li>
+        <li>square.call(4) =&gt; <%= @square_output %></li>
+        <li>add_proc.lambda? =&gt; <%= @proc_is_lambda %></li>
+        <li>add_lambda.lambda? =&gt; <%= @lambda_is_lambda %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: difference #1 - arguments ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. Difference #1 - a lambda is picky about arguments</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Give a <strong class="text-gray-200">lambda</strong> the wrong number of arguments and it complains.
+      Give a <strong class="text-gray-200">proc</strong> the wrong number and it just shrugs — missing ones become empty.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-400/20 p-3 text-sm text-amber-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a lambda is a strict teacher who checks your homework is complete. A proc is a chill teacher who accepts it either way.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">strict.call(1, 2)</code> → exactly 2 arguments given, exactly 2 expected → runs fine → result: <span class="text-emerald-300">3</span></p>
+      <p><code class="text-gray-400">strict.call(1)</code> → lambda expected 2 arguments, only got 1 → it refuses → raises an <span class="text-red-300">ArgumentError</span></p>
+      <p><code class="text-gray-400">relaxed.call(1)</code> → proc expected 2, only got 1 → it doesn't mind → the missing one just becomes empty → result: <span class="text-emerald-300">"a=1, b="</span></p>
+    </div>
+
+    <%= terminal_window("arguments.rb") do %>
+strict = ->(a, b) { a + b }
+strict.call(1, 2) # => 3
+strict.call(1)    # => Error! wrong number of arguments
+
+relaxed = Proc.new { |a, b| "a=#{a}, b=#{b}" }
+relaxed.call(1) # => "a=1, b=" (no error)
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>strict.call(1) =&gt; <%= @lambda_missing_arg_output %></li>
+        <li>relaxed.call(1) =&gt; <%= @proc_missing_arg_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: difference #2 - return ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. Difference #2 - what "return" does</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-amber-300">return</code> inside a <strong class="text-gray-200">proc</strong> stops the whole method it's in.
+      <code class="text-amber-300">return</code> inside a <strong class="text-gray-200">lambda</strong> only stops the lambda — everything else keeps going.
+      This is the one that trips almost everyone up the first time, so go slow here.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-amber-500/10 ring-1 ring-amber-400/20 p-3 text-sm text-amber-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a proc's return pulls the fire alarm for the whole building. A lambda's return just closes one door.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-3">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">🔍 test_proc, step by step</p>
+        <ol class="list-decimal list-inside space-y-0.5">
+          <li><code class="text-gray-400">test_proc</code> starts running.</li>
+          <li>It creates a proc that says "when called, return out of the WHOLE method."</li>
+          <li><code class="text-gray-400">say_bye.call</code> runs that proc.</li>
+          <li>The proc's <code class="text-amber-300">return</code> fires — since procs are tied to the method that made them, this exits <code class="text-gray-400">test_proc</code> immediately.</li>
+          <li>The last line, <code class="text-gray-400">"you will never see this line"</code>, never runs.</li>
+          <li>Final result: <span class="text-emerald-300">"stopped everything!"</span></li>
+        </ol>
+      </div>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">🔍 test_lambda, step by step</p>
+        <ol class="list-decimal list-inside space-y-0.5">
+          <li><code class="text-gray-400">test_lambda</code> starts running.</li>
+          <li>It creates a lambda that says "when called, return — but only out of ME."</li>
+          <li><code class="text-gray-400">say_bye.call</code> runs that lambda.</li>
+          <li>The lambda's <code class="text-amber-300">return</code> fires, but only ends the lambda, like a normal method finishing.</li>
+          <li><code class="text-gray-400">test_lambda</code> keeps going right after the <code class="text-gray-400">.call</code> line.</li>
+          <li>The last line runs and becomes the final result: <span class="text-emerald-300">"this line still runs!"</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <%= terminal_window("return.rb") do %>
+def test_proc
+  say_bye = Proc.new { return "stopped everything!" }
+  say_bye.call
+  "you will never see this line"
+end
+test_proc # => "stopped everything!"
+
+def test_lambda
+  say_bye = lambda { return "just stopped the lambda" }
+  say_bye.call
+  "this line still runs!"
+end
+test_lambda # => "this line still runs!"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>test_proc =&gt; <%= @proc_return_output %></li>
+        <li>test_lambda =&gt; <%= @lambda_return_output %></li>
+      </ul>
+    </div>
+  </section>
+</div>

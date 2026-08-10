@@ -1,0 +1,186 @@
+<% content_for :title, "Day 8 - Exception Handling" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-orange-300 hover:text-orange-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-orange-500/15 text-orange-300 ring-orange-400/30">DAY 8</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Exception Handling</h1>
+    </div>
+    <p class="mt-3 text-gray-400">How to stop errors from crashing your whole program.</p>
+  </div>
+
+  <%# ---------- Section 1: begin/rescue ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. begin / rescue - catching an error</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Code inside <code class="text-orange-300">begin</code> runs normally. If it raises an error,
+      <code class="text-orange-300">rescue</code> catches it and runs your recovery code instead of crashing everything.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-orange-500/10 ring-1 ring-orange-400/20 p-3 text-sm text-orange-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a safety net under a tightrope walker. If they slip (an error), the net catches them instead of it being a disaster.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">safe_divide(10, 2)</code> → no error happens → the rescue is never even touched → result: <span class="text-emerald-300">5</span></p>
+      <p><code class="text-gray-400">safe_divide(10, 0)</code> → dividing by zero raises <span class="text-red-300">ZeroDivisionError</span> → rescue catches it before it crashes → result: <span class="text-emerald-300">"Can't divide by zero!"</span></p>
+    </div>
+
+    <%= terminal_window("begin_rescue.rb") do %>
+def safe_divide(a, b)
+  a / b
+rescue ZeroDivisionError
+  "Can't divide by zero!"
+end
+
+safe_divide(10, 2) # => 5
+safe_divide(10, 0) # => "Can't divide by zero!"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>safe_divide(10, 2) =&gt; <%= @divide_ok_output %></li>
+        <li>safe_divide(10, 0) =&gt; <%= @divide_error_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: raise ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. raise - throwing your own error</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-orange-300">raise</code> lets you create an error on purpose, with your own message, the moment
+      you decide something shouldn't be allowed to continue.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-orange-500/10 ring-1 ring-orange-400/20 p-3 text-sm text-orange-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a referee blowing the whistle the moment a rule gets broken, instead of letting play continue.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">check_age(25)</code> → 25 is not negative → the raise line is skipped entirely → result: <span class="text-emerald-300">"Age is valid: 25"</span></p>
+      <p><code class="text-gray-400">check_age(-5)</code> → -5 IS negative → <code class="text-orange-300">raise</code> fires an ArgumentError → we rescue it in our demo so it doesn't crash the page → result: <span class="text-emerald-300">"Blocked: Age can't be negative"</span></p>
+    </div>
+
+    <%= terminal_window("raise.rb") do %>
+def check_age(age)
+  raise ArgumentError, "Age can't be negative" if age < 0
+
+  "Age is valid: #{age}"
+end
+
+check_age(25) # => "Age is valid: 25"
+check_age(-5) # => raises ArgumentError: "Age can't be negative"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>check_age(25) =&gt; <%= @age_ok_output %></li>
+        <li>check_age(-5) =&gt; <%= @age_error_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: custom exception classes ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. Custom exception classes - your own named errors</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Making your own error class (by inheriting from <code class="text-orange-300">StandardError</code>) lets you rescue
+      that exact kind of problem specifically, instead of catching every possible error the same way.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-orange-500/10 ring-1 ring-orange-400/20 p-3 text-sm text-orange-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> giving a specific problem its own name tag, so you can say "if THIS exact problem happens, do THIS" instead of one generic reaction to everything.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">withdraw(100, 40)</code> → 40 is less than the balance of 100 → no error → result: <span class="text-emerald-300">"New balance: 60"</span></p>
+      <p><code class="text-gray-400">withdraw(100, 500)</code> → 500 is more than the balance → raises our own <code class="text-orange-300">InsufficientFundsError</code> → rescue catches that SPECIFIC error → result: <span class="text-emerald-300">"Blocked: Not enough money! Balance is 100"</span></p>
+    </div>
+
+    <%= terminal_window("custom_exception.rb") do %>
+class InsufficientFundsError < StandardError; end
+
+def withdraw(balance, amount)
+  raise InsufficientFundsError, "Not enough money! Balance is #{balance}" if amount > balance
+
+  balance - amount
+end
+
+begin
+  withdraw(100, 500)
+rescue InsufficientFundsError => e
+  "Blocked: #{e.message}"
+end
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>withdraw(100, 40) =&gt; <%= @withdraw_ok_output %></li>
+        <li>withdraw(100, 500) =&gt; <%= @withdraw_error_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: ensure ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. ensure - code that ALWAYS runs</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      An <code class="text-orange-300">ensure</code> block runs no matter what - whether the code above it succeeded, or
+      failed and got rescued. It's normally used for cleanup, like closing a file or logging that something was attempted.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-orange-500/10 ring-1 ring-orange-400/20 p-3 text-sm text-orange-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> locking the door when you leave a room - you do it whether the visit went well or badly.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">process_with_ensure(false)</code> → no error → rescue is skipped → <code class="text-orange-300">ensure</code> still runs after → log has 2 lines</p>
+      <p><code class="text-gray-400">process_with_ensure(true)</code> → an error IS raised → rescue catches it → <code class="text-orange-300">ensure</code> STILL runs after that → log also has 2 lines</p>
+    </div>
+
+    <%= terminal_window("ensure.rb") do %>
+def process_with_ensure(should_fail)
+  log = []
+  begin
+    raise "Something went wrong!" if should_fail
+
+    log << "Payment processed successfully"
+  rescue => e
+    log << "Rescued an error: #{e.message}"
+  ensure
+    log << "Ensure block ran - this ALWAYS happens"
+  end
+  log
+end
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <p class="text-xs text-emerald-300/70 mb-1">process_with_ensure(false):</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200 mb-3">
+        <% @ensure_success_log.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+      <p class="text-xs text-emerald-300/70 mb-1">process_with_ensure(true):</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @ensure_failure_log.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+</div>

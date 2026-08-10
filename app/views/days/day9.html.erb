@@ -1,0 +1,138 @@
+<% content_for :title, "Day 9 - File I/O and JSON" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-teal-300 hover:text-teal-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-teal-500/15 text-teal-300 ring-teal-400/30">DAY 9</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">File I/O and JSON</h1>
+    </div>
+    <p class="mt-3 text-gray-400">Saving data to disk, and the text format almost every app uses to do it: JSON.</p>
+  </div>
+
+  <%# ---------- Section 1: File I/O ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. Writing & reading a file</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-teal-300">File.write(path, text)</code> saves text to a file, creating it if needed.
+      <code class="text-teal-300">File.read(path)</code> reads it back as one big string.
+      <code class="text-teal-300">File.exist?(path)</code> checks if the file is actually there first.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-teal-500/10 ring-1 ring-teal-400/20 p-3 text-sm text-teal-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a notebook. write is putting words on the page, read is opening it back up and reading what's there.</span>
+    </div>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">File.write("notes.txt", "...")</code> → saves the text to a real file on disk</p>
+      <p><code class="text-gray-400">File.exist?("notes.txt")</code> → checks it's really there → <code class="text-teal-300">true</code></p>
+      <p><code class="text-gray-400">File.read("notes.txt")</code> → opens the file and returns everything inside it as a string</p>
+    </div>
+
+    <%= terminal_window("file_io.rb") do %>
+File.write("notes.txt", "Hello from Ruby!\nThis is stored in a real file.")
+
+File.exist?("notes.txt") # => true
+
+File.read("notes.txt")
+# => "Hello from Ruby!\nThis is stored in a real file."
+    <% end %>
+
+    <p class="mt-2 text-xs text-gray-500">(This demo writes to a temporary file in the app's own tmp/ folder and deletes it right after, so it's safe to run on every page load.)</p>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>File.exist?(...) =&gt; <%= @file_existed_output %></li>
+        <li>File.read(...) =&gt; <%= @file_content_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: Ruby -> JSON ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. Ruby → JSON</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <strong class="text-gray-200">JSON</strong> is just a text format for data that almost every language understands.
+      Calling <code class="text-teal-300">.to_json</code> on a Ruby hash turns it into that text.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-teal-500/10 ring-1 ring-teal-400/20 p-3 text-sm text-teal-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> translating a Ruby hash into a universal language other programs (or other computers) can read too.</span>
+    </div>
+
+    <%= terminal_window("ruby_to_json.rb") do %>
+data = { name: "Ali", age: 25, skills: ["Ruby", "Rails"] }
+
+data.to_json
+# => '{"name":"Ali","age":25,"skills":["Ruby","Rails"]}'
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <p class="font-mono text-sm text-emerald-200 break-all">data.to_json =&gt; <%= @json_text_output %></p>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: JSON -> Ruby ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. JSON → Ruby (and a gotcha with keys)</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-teal-300">JSON.parse(text)</code> turns JSON text back into a Ruby hash. The gotcha: the keys
+      come back as <strong class="text-gray-200">Strings</strong> by default, not Symbols - even if you started with symbol keys!
+    </p>
+
+    <div class="mt-3 rounded-lg bg-white/5 ring-1 ring-white/10 p-3 text-sm text-gray-300 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">🔍 Step by step</p>
+      <p><code class="text-gray-400">JSON.parse(json_text)</code> → keys come back as Strings → you'd access it with <code class="text-teal-300">parsed["name"]</code>, NOT <code class="text-teal-300">parsed[:name]</code></p>
+      <p><code class="text-gray-400">JSON.parse(json_text, symbolize_names: true)</code> → tells Ruby to convert the keys to Symbols for you → now <code class="text-teal-300">parsed[:name]</code> works</p>
+    </div>
+
+    <%= terminal_window("json_to_ruby.rb") do %>
+json_text = '{"name":"Ali","age":25,"skills":["Ruby","Rails"]}'
+
+parsed = JSON.parse(json_text)
+parsed["name"] # => "Ali"   (String key!)
+parsed[:name]  # => nil     (there is no Symbol key)
+
+parsed_symbols = JSON.parse(json_text, symbolize_names: true)
+parsed_symbols[:name] # => "Ali"   (now it's a Symbol key)
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>JSON.parse(json_text) =&gt; <%= @json_string_keys_output %></li>
+        <li>JSON.parse(json_text, symbolize_names: true) =&gt; <%= @json_symbol_keys_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: putting it together ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. Putting it together - save & load real data</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Combine both: convert a hash to JSON text, save that text to a file, then later read the file back and parse it
+      into a hash again. This is exactly how simple apps save data between runs, without needing a database.
+    </p>
+
+    <%= terminal_window("save_and_load.rb") do %>
+data = { title: "Learn Ruby", done: false }
+
+File.write("tasks.json", data.to_json)
+
+# ...later, maybe after restarting the program...
+
+loaded = JSON.parse(File.read("tasks.json"))
+loaded # => {"title"=>"Learn Ruby", "done"=>false}
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <p class="font-mono text-sm text-emerald-200">loaded =&gt; <%= @saved_and_loaded_output %></p>
+    </div>
+  </section>
+</div>

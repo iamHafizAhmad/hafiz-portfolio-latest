@@ -1,0 +1,158 @@
+<% content_for :title, "Day 7 - Review + CLI app" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-sky-300 hover:text-sky-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-sky-500/15 text-sky-300 ring-sky-400/30">DAY 7</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Review + build a small CLI app</h1>
+    </div>
+    <p class="mt-3 text-gray-400">No new concepts today — just Days 1-6 combined into one real program: a tiny task manager.</p>
+  </div>
+
+  <%# ---------- Section 1: the class design ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. The Task Manager - putting it all together</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      This one small app uses: a <strong class="text-gray-200">class</strong> for Task (Day 1), a
+      <strong class="text-gray-200">mixin</strong> for logging (Day 4), and <strong class="text-gray-200">Enumerable</strong>
+      methods like map and count to work with the list (Day 6).
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-sky-500/10 ring-1 ring-sky-400/20 p-3 text-sm text-sky-100">
+      <span>💡</span>
+      <span><strong>Why this matters:</strong> real apps are never just one concept in isolation - they're small pieces like this, wired together.</span>
+    </div>
+
+    <%= terminal_window("task_manager.rb") do %>
+class Task
+  attr_accessor :title, :done
+
+  def initialize(title)
+    @title = title
+    @done = false
+  end
+
+  def to_s
+    "[#{done ? "x" : " "}] #{title}"
+  end
+end
+
+module Loggable
+  def log(message)
+    "LOG: #{message}"
+  end
+end
+
+class TaskManager
+  include Loggable # mixin from Day 4
+
+  def initialize
+    @tasks = []
+  end
+
+  def add(title)
+    @tasks << Task.new(title)
+    log("Added task: #{title}")
+  end
+
+  def complete(index)
+    @tasks[index].done = true
+    log("Completed task: #{@tasks[index].title}")
+  end
+
+  def list
+    @tasks.map(&:to_s) # Enumerable from Day 6
+  end
+
+  def pending_count
+    @tasks.count { |task| !task.done } # Enumerable from Day 6
+  end
+end
+    <% end %>
+  </section>
+
+  <%# ---------- Section 2: running a session ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. Running a session</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Here's what actually happens when you create a manager and call a few methods on it, one after another -
+      like typing commands into a real terminal.
+    </p>
+
+    <%= terminal_window("session.rb") do %>
+manager = TaskManager.new
+
+manager.add("Learn Ruby")
+manager.add("Build a CLI app")
+manager.add("Review Enumerable methods")
+manager.complete(0) # mark the first task done
+
+manager.list
+manager.pending_count
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output - what each line printed</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @session_log.each do |line| %>
+          <li>=&gt; <%= line %></li>
+        <% end %>
+      </ul>
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mt-3 mb-2">manager.list</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <% @task_list_output.each do |line| %>
+          <li><%= line %></li>
+        <% end %>
+      </ul>
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mt-3 mb-2">manager.pending_count</p>
+      <p class="font-mono text-sm text-emerald-200"><%= @pending_count_output %></p>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: real CLI input ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. How a real terminal version would read input</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Above, we called the methods directly. A real CLI instead sits in a loop, reads whatever you type with
+      <code class="text-sky-300">gets.chomp</code>, and decides what to do based on that. This part can't run inside a
+      web page (there's no terminal to type into here) - but this is exactly the code you'd run locally in your own terminal.
+    </p>
+
+    <%= terminal_window("cli.rb") do %>
+manager = TaskManager.new
+
+loop do
+  print "> "
+  command = gets.chomp # reads one line you typed, minus the newline
+
+  case command
+  when "list"
+    puts manager.list
+  when /\Aadd (.+)/
+    manager.add($1)
+    puts "Added!"
+  when "quit"
+    break
+  else
+    puts "Unknown command"
+  end
+end
+    <% end %>
+  </section>
+
+  <%# ---------- Section 4: challenges ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. Try it yourself</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Copy the TaskManager code into a file on your machine and try extending it. A few ideas, roughly in order of difficulty:
+    </p>
+    <ul class="mt-3 space-y-2 text-gray-300 text-sm list-disc list-inside">
+      <li>Add a <code class="text-sky-300">remove(index)</code> method that deletes a task.</li>
+      <li>Add a <code class="text-sky-300">completed_count</code> method (hint: it's almost identical to pending_count).</li>
+      <li>Make <code class="text-sky-300">add</code> raise an error (Day 8!) if the title is empty.</li>
+      <li>Save the task list to a JSON file (Day 9!) so tasks survive between runs.</li>
+      <li>Wrap the whole thing in the <code class="text-sky-300">loop</code> + <code class="text-sky-300">gets.chomp</code> pattern above and actually run it in your terminal.</li>
+    </ul>
+  </section>
+</div>

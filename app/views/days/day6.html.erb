@@ -1,0 +1,136 @@
+<% content_for :title, "Day 6 - Enumerable" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-fuchsia-300 hover:text-fuchsia-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-400/30">DAY 6</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Enumerable: map, select, reduce</h1>
+    </div>
+    <p class="mt-3 text-gray-400">The 3 methods you'll use every single day as a Ruby dev.</p>
+  </div>
+
+  <%# ---------- Section 1: map ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. map - transform every item</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-fuchsia-300">map</code> goes through every item in a list and transforms each one, giving
+      you back a brand new list of the exact same length.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-3 text-sm text-fuchsia-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> an assembly line — each item goes in, comes out changed, one at a time. Same number of items in as out.</span>
+    </div>
+
+    <%= terminal_window("map.rb") do %>
+numbers = [1, 2, 3, 4]
+
+doubled = numbers.map { |n| n * 2 }
+doubled # => [2, 4, 6, 8]
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>numbers.map { |n| n * 2 } =&gt; <%= @map_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: select / reject ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. select & reject - keep or throw away</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-fuchsia-300">select</code> keeps only the items that pass a test you give it.
+      <code class="text-fuchsia-300">reject</code> does the opposite — it keeps whatever fails the test.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-3 text-sm text-fuchsia-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a bouncer at a club door — only lets through whoever matches the rule, turns everyone else away.</span>
+    </div>
+
+    <%= terminal_window("select_and_reject.rb") do %>
+numbers = [1, 2, 3, 4, 5, 6]
+
+evens = numbers.select { |n| n.even? }
+evens # => [2, 4, 6]
+
+odds = numbers.reject { |n| n.even? }
+odds # => [1, 3, 5]
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>evens =&gt; <%= @select_output %></li>
+        <li>odds =&gt; <%= @reject_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: reduce ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. reduce (aka inject) - combine everything into one value</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-fuchsia-300">reduce</code> walks through every item and folds it into one single running
+      total, until there's just one final value left at the end.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-3 text-sm text-fuchsia-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> rolling a snowball downhill — every item it passes gets folded into the growing ball.</span>
+    </div>
+
+    <%= terminal_window("reduce.rb") do %>
+numbers = [1, 2, 3, 4]
+
+# sum starts at 0, then adds each number as it goes
+total = numbers.reduce(0) { |sum, n| sum + n }
+total # => 10
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>total =&gt; <%= @reduce_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: bonus + chaining ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. Bonus: find, sort, and chaining them together</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-fuchsia-300">find</code> stops and returns the very first item that matches.
+      <code class="text-fuchsia-300">sort</code> reorders a list. And since <code class="text-fuchsia-300">select</code>
+      and <code class="text-fuchsia-300">map</code> both hand back a new array, you can chain them one after another.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-fuchsia-500/10 ring-1 ring-fuchsia-400/20 p-3 text-sm text-fuchsia-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a factory line with several stations — filter the items at one station, then transform what's left at the next.</span>
+    </div>
+
+    <%= terminal_window("bonus_and_chaining.rb") do %>
+numbers = [1, 2, 3, 4, 5, 6]
+
+numbers.find { |n| n > 3 } # => 4  (first match, then stops)
+[3, 1, 2].sort             # => [1, 2, 3]
+
+# chaining: filter evens, then multiply each by 10, then sum it all up
+numbers.select { |n| n.even? }.map { |n| n * 10 }.reduce(0) { |sum, n| sum + n }
+# => 120
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>numbers.find { |n| n &gt; 3 } =&gt; <%= @find_output %></li>
+        <li>[3, 1, 2].sort =&gt; <%= @sort_output %></li>
+        <li>chained result =&gt; <%= @chained_output %></li>
+      </ul>
+    </div>
+  </section>
+</div>

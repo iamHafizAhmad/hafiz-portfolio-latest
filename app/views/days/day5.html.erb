@@ -1,0 +1,142 @@
+<% content_for :title, "Day 5 - Inheritance vs Composition" %>
+
+<div class="max-w-3xl mx-auto space-y-10">
+  <div>
+    <%= link_to "← All questions", root_path, class: "text-sm text-violet-300 hover:text-violet-200" %>
+    <div class="flex items-center gap-3 mt-3">
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 bg-violet-500/15 text-violet-300 ring-violet-400/30">DAY 5</span>
+      <h1 class="text-2xl font-bold text-white tracking-tight">OOP: Inheritance vs Composition</h1>
+    </div>
+    <p class="mt-3 text-gray-400">Two ways to reuse code between classes. "is-a" vs "has-a" — kept simple.</p>
+  </div>
+
+  <%# ---------- Section 1: inheritance ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">1. Inheritance ("is-a")</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      <code class="text-violet-300">class Dog &lt; Animal</code> means Dog automatically gets everything Animal has.
+      It's an <strong class="text-gray-200">"is-a"</strong> relationship — a Dog IS an Animal.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-violet-500/10 ring-1 ring-violet-400/20 p-3 text-sm text-violet-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> a child inheriting traits from a parent. The child gets what the parent has, automatically, plus can add their own.</span>
+    </div>
+
+    <%= terminal_window("inheritance.rb") do %>
+class Animal
+  def initialize(name)
+    @name = name
+  end
+
+  def eat
+    "#{@name} is eating"
+  end
+end
+
+class Dog < Animal
+  def bark
+    "#{@name} says Woof!"
+  end
+end
+
+dog = Dog.new("Rex")
+dog.eat  # => "Rex is eating"   (inherited from Animal, for free)
+dog.bark # => "Rex says Woof!"  (Dog's own method)
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>dog.eat =&gt; <%= @inherit_eat_output %></li>
+        <li>dog.bark =&gt; <%= @inherit_bark_output %></li>
+        <li>dog.is_a?(Animal) =&gt; <%= @dog_is_animal %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 2: super ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">2. super - add to a method instead of replacing it</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      When a child class overrides a method, <code class="text-violet-300">super</code> lets it still call the
+      parent's original version too, so you can build on top of it instead of throwing it away.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-violet-500/10 ring-1 ring-violet-400/20 p-3 text-sm text-violet-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> "do what Mom does, then add my own thing on top."</span>
+    </div>
+
+    <%= terminal_window("super.rb") do %>
+class LoudDog < Animal
+  def eat
+    super + ", loudly!" # runs Animal#eat first, then adds more
+  end
+end
+
+LoudDog.new("Rex").eat # => "Rex is eating, loudly!"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>LoudDog.new("Rex").eat =&gt; <%= @super_output %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 3: composition ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">3. Composition ("has-a")</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Instead of inheriting, a class can just hold another object inside it and use it. It's a
+      <strong class="text-gray-200">"has-a"</strong> relationship — a Car HAS an Engine, but a Car is NOT a kind of Engine.
+    </p>
+
+    <div class="mt-3 flex gap-2 rounded-lg bg-violet-500/10 ring-1 ring-violet-400/20 p-3 text-sm text-violet-100">
+      <span>💡</span>
+      <span><strong>Think of it like:</strong> building a car out of parts. The car uses an engine — it isn't one.</span>
+    </div>
+
+    <%= terminal_window("composition.rb") do %>
+class Engine
+  def start
+    "Engine started"
+  end
+end
+
+class Car
+  def initialize
+    @engine = Engine.new # Car HAS an Engine
+  end
+
+  def start
+    @engine.start
+  end
+end
+
+car = Car.new
+car.start # => "Engine started"
+    <% end %>
+
+    <div class="mt-4 rounded-lg bg-emerald-500/10 ring-1 ring-emerald-400/20 p-4">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-300 mb-2">Live output</p>
+      <ul class="space-y-1 font-mono text-sm text-emerald-200">
+        <li>car.start =&gt; <%= @composition_output %></li>
+        <li>car.is_a?(Engine) =&gt; <%= @car_is_engine %></li>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------- Section 4: which to pick ---------- %>
+  <section class="rounded-2xl ring-1 ring-white/10 bg-white/[0.03] p-6">
+    <h2 class="text-lg font-semibold text-white">4. Which one should you use?</h2>
+    <p class="mt-2 text-gray-400 leading-relaxed">
+      Use <strong class="text-gray-200">inheritance</strong> when one thing really is a more specific version of
+      another (a Dog really is an Animal). Reach for <strong class="text-gray-200">composition</strong> more often
+      though — swapping out a part (a new Engine) is much easier than restructuring a whole class hierarchy.
+      This is why you'll often hear: <em class="text-gray-300">"favor composition over inheritance."</em>
+    </p>
+  </section>
+</div>

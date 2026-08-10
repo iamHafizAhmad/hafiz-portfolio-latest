@@ -1,0 +1,52 @@
+<% content_for :title, "Ruby/Rails Interview Practice" %>
+
+<% day_colors = {
+  1 => { badge: "bg-indigo-500/15 text-indigo-300 ring-indigo-400/30", ring: "hover:ring-indigo-400/40", dot: "bg-indigo-400" },
+  2 => { badge: "bg-cyan-500/15 text-cyan-300 ring-cyan-400/30", ring: "hover:ring-cyan-400/40", dot: "bg-cyan-400" },
+  3 => { badge: "bg-amber-500/15 text-amber-300 ring-amber-400/30", ring: "hover:ring-amber-400/40", dot: "bg-amber-400" },
+  4 => { badge: "bg-rose-500/15 text-rose-300 ring-rose-400/30", ring: "hover:ring-rose-400/40", dot: "bg-rose-400" },
+  5 => { badge: "bg-violet-500/15 text-violet-300 ring-violet-400/30", ring: "hover:ring-violet-400/40", dot: "bg-violet-400" },
+  6 => { badge: "bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-400/30", ring: "hover:ring-fuchsia-400/40", dot: "bg-fuchsia-400" },
+  7 => { badge: "bg-sky-500/15 text-sky-300 ring-sky-400/30", ring: "hover:ring-sky-400/40", dot: "bg-sky-400" },
+  8 => { badge: "bg-orange-500/15 text-orange-300 ring-orange-400/30", ring: "hover:ring-orange-400/40", dot: "bg-orange-400" },
+  9 => { badge: "bg-teal-500/15 text-teal-300 ring-teal-400/30", ring: "hover:ring-teal-400/40", dot: "bg-teal-400" },
+  10 => { badge: "bg-pink-500/15 text-pink-300 ring-pink-400/30", ring: "hover:ring-pink-400/40", dot: "bg-pink-400" }
+} %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="text-center mb-14">
+    <span class="inline-block text-xs font-medium tracking-wide uppercase text-indigo-300 bg-indigo-500/10 ring-1 ring-indigo-400/30 rounded-full px-3 py-1 mb-4">
+      Goal: get very strong in Ruby before touching advanced Rails
+    </span>
+    <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">Ruby Interview Question Bank</h1>
+    <p class="mt-3 text-gray-400">Every question below, answered in the simplest words possible. Open a day's code lab to run the examples for real.</p>
+  </div>
+
+  <% @questions_by_day.each do |day| %>
+    <% colors = day_colors[day[:day]] %>
+    <section class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full ring-1 <%= colors[:badge] %>">DAY <%= day[:day] %></span>
+          <h2 class="text-xl font-semibold text-white"><%= day[:title] %></h2>
+        </div>
+        <%= link_to "Run examples →", send(day[:path]), target: "_blank", rel: "noopener", class: "text-sm font-medium text-white bg-white/10 hover:bg-white/20 transition-colors rounded-lg px-3 py-1.5 whitespace-nowrap" %>
+      </div>
+
+      <div class="space-y-2.5">
+        <% day[:items].each do |item| %>
+          <details class="group rounded-xl bg-white/[0.04] ring-1 ring-white/10 open:ring-white/20 open:bg-white/[0.06] transition-all <%= colors[:ring] %> hover:ring-2">
+            <summary class="cursor-pointer select-none list-none px-4 py-3.5 flex items-center gap-3">
+              <span class="w-1.5 h-1.5 rounded-full <%= colors[:dot] %> shrink-0"></span>
+              <span class="font-medium text-gray-100 flex-1"><%= item[:q] %></span>
+              <span class="text-gray-500 transition-transform duration-200 group-open:rotate-180">⌄</span>
+            </summary>
+            <div class="px-4 pb-4 pl-8 text-gray-400 leading-relaxed text-[15px]">
+              <%= item[:a] %>
+            </div>
+          </details>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
